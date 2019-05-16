@@ -1,0 +1,13 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /opt/sw/
+hooks:
+
+  AfterInstall:
+    - location: /opt/sw/installAdminPortal.sh
+      timeout: 180
+      runas: root
+
+

@@ -1,16 +1,36 @@
-version: 0.1
+version: 0.2
 
 phases:
+  install:
+    commands:
+      - echo Nothing to install, container image should have it all based on what we selected
+  pre_build:
+    commands:
+      - echo Just listing basic information about the environment
+      - which mvn
+      - mvn -version
+      - pwd
   build:
     commands:
       - echo Build started on `date`
-      - mvn test
+      - mvn package
   post_build:
     commands:
       - echo Build completed on `date`
-      - mvn package
+      - echo Working on creating the tar ball with the WAR and AppSpec file for CodeDeploy
+      - mkdir appfiles
+      - cd appfiles
+      - cp ../target/managemylearning-admin-portal-0.0.1-SNAPSHOT.jar mmladminportal.jar
+      - cp ../appspec.yml .
+      - ls -al
+      - tar -zcvf ../target/MMLAdminPortal.tar.gz *.*
 artifacts:
   files:
-    - target/managemylearning-admin-portal-0.0.1-SNAPSHOT.jar
+# IMPORTANT
+# You have to use the tar.gz if you are manually executing CodeDeploy
+    - target/MMLAdminPortal.tar.gz
+# Use the individual files if you are using the CodeDeploy from CodePipeline
+# Reason is pipeline does not untar and errors out saying that the appspec file is not there
+#    - appfiles/appspec.yml
+#    - appfiles/mmladminportal.jar
   discard-paths: yes
-  name: managemylearning-admin-portal-0.0.1-SNAPSHOT.zip
