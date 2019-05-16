@@ -11,4 +11,4 @@ phases:
       - mvn package
 artifacts:
   files:
-    - /managemylearning-admin-portal-0.0.1-SNAPSHOT.zip
+    - target/managemylearning-admin-portal-0.0.1-SNAPSHOT.zip
