@@ -22,7 +22,7 @@ phases:
       - cd appfiles
       - cp ../target/managemylearning-admin-portal-0.0.1-SNAPSHOT.jar mmladminportal.jar
       - cp ../appspec.yml .
-      - cp ../runAdminPortal.sh .      
+      - cp ../runAdminPortal.sh runAdminPortal1.sh      
       - ls -al
       - tar -zcvf ../target/MMLAdminPortal.tar.gz *.*
 artifacts:
@@ -34,5 +34,5 @@ artifacts:
 # Reason is pipeline does not untar and errors out saying that the appspec file is not there
 #    - appfiles/appspec.yml
 #    - appfiles/mmladminportal.jar
-#    - appfiles/runAdminPortal.sh
+#    - appfiles/runAdminPortal1.sh
   discard-paths: yes
