@@ -1,5 +1,5 @@
 #!/bin/bash
 java -version
-nohup java -jar /opt/sw/mmladminportal.jar &
+nohup java -jar /opt/capstone/mmladminportal.jar &
 echo "finish"
 
