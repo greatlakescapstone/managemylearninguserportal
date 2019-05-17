@@ -44,7 +44,7 @@ public class HealthController {
   @GetMapping("/health")
   public ResponseEntity<String> getAllUsers() {
 
-    return ResponseEntity.ok().body("<html><body>all good</body></html");
+    return ResponseEntity.ok().body("<html><body>all good v.1</body></html");
   }
 
  
