@@ -6,7 +6,7 @@ files:
 hooks:
 
   AfterInstall:
-    - location: /opt/sw/runAdminPortal.sh
+    - location: runAdminPortal.sh
       timeout: 180
       runas: root
 
