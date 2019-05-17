@@ -13,7 +13,7 @@ hooks:
 
   AfterInstall:
     - location: runAdminPortal1.sh
-      timeout: 300
+      timeout: 1000
       runas: root
 
 
