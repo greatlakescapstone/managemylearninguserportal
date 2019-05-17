@@ -3,6 +3,12 @@ os: linux
 files:
   - source: /
     destination: /opt/sw/
+
+permissions:
+  - object: //opt/sw/
+    pattern: "*"
+    mode: 777
+    
 hooks:
 
   AfterInstall:
