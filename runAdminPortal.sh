@@ -1,3 +1,5 @@
-#!/bin/sh
-sudo chmod 777 mmladminportal.jar
+#!/bin/bash
 java -version
+nohup java -jar /opt/sw/mmladminportal.jar &
+echo "finish"
+

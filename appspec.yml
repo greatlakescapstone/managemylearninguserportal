@@ -2,18 +2,17 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /opt/sw/
+    destination: /opt/capstone/
 
 permissions:
-  - object: /opt/sw/
-    pattern: "*"
-    mode: 777
+  - object: /opt/capstone/
+    pattern: "**"
+    mode: 4777
     
 hooks:
-
   AfterInstall:
     - location: runAdminPortal1.sh
-      timeout: 1000
+      timeout: 300
       runas: root
 
 
