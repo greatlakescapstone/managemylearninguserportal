@@ -5,7 +5,7 @@ files:
     destination: /opt/sw/
 
 permissions:
-  - object: //opt/sw/
+  - object: /opt/sw/
     pattern: "*"
     mode: 777
     
