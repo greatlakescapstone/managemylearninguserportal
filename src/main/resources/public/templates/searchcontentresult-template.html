@@ -1,0 +1,106 @@
+<div class="" >
+           
+  <table class="table table-striped">
+    <thead>
+      <tr>
+      	<th></th>
+        <th>Category</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Preview</th>
+       <!--  <th>Link</th>
+        <th>StreamingLink</th> -->
+        <th>Ratings</th>
+        <th>Comments</th>
+        <th>price</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+       <% _.each(contents, function(content){ %>
+           <tr>
+           	<td></td>
+            <td> <%= content.category %> </td>
+            <td> <%= content.title %> </td>
+            <td> <%= content.author %> </td>
+            <td> 
+ 	            <label  data-container="body" data-toggle="popover" 
+                	data-placement="top" data-content="<%= content.preview %>" > 
+	            	<span class="glyphicon glyphicon-file">
+	             	</span>
+	            </label>
+	                        
+
+			</td>
+			<!-- 
+            <td>
+            
+             <a id="videoLink" class="videoLink" contentlink="<%= content.links %>"  href="#" >
+             	<span class="glyphicon glyphicon-picture">
+             	</span>
+             </a>
+             
+             
+            </td>
+            <td> 
+	            <a id="videoLink" class="videoLink" contentlink="<%= content.linkshls %>" href="<%= content.linkshls %>" > 
+	            	<span class="glyphicon glyphicon-picture">
+	             	</span>
+	            </a>
+            </td>
+             -->
+            <td> 
+            	
+ 	            <label  data-container="body" data-toggle="popover" 
+                	data-placement="top" data-content="<%= content.rating %>" > 
+	            	<span class="glyphicon glyphicon-file">
+	             	</span>
+	            </label>
+	                       	
+            	<!-- button type="button" class="btn btn-default btn-sm" 
+                	data-container="body" data-toggle="popover" 
+                	data-placement="top" data-content="<%= content.rating %> ">
+				  <span class="glyphicon glyphicon-file"></span> 
+				</button -->
+            </td>
+            <td> 
+				<label href="#" data-container="body" data-toggle="popover" 
+                	data-placement="top" data-content="<%= content.comments %>" > 
+	            	<span class="glyphicon glyphicon-file">
+	             	</span>
+	            </label>            
+
+             </td> 
+            <td> <%= content.price %> </td>                        
+        	<td>
+        	    <%if(content.links.match(_config.videoExtRegExPattern)){%>
+	        		<%if(content.linkshls){%>
+		            <a id="subscribeLink" class="subscribeHlsLink" href="#" data-content="<%=_config.userId%>,<%= content.category %>,
+		                                                  <%= content.content_title %>,<%=content.author%>,<%=content.preview%>,<%=content.price%>,<%=content.linkshls%>" > 
+		            	<span class="glyphicon  glyphicon-eye-open">
+		             	</span>
+		            </a>      
+		            <%}%>
+		            <a id="subscribeLink" class="subscribeLink" href="#" data-content="<%=_config.userId%>,<%= content.category %>,
+		                                                  <%= content.content_title %>,<%=content.author%>,<%=content.preview%>,<%=content.price%>,<%=content.links%>" > 
+		            	<span class="glyphicon  glyphicon-eye-close">
+		             	</span>
+		            </a>    
+	            <%}else{%>	
+	            	<a id="subscribeLink" class="subscribeLink" href="#" data-content="<%=_config.userId%>,<%= content.category %>,
+		                                                  <%= content.content_title %>,<%=content.author%>,<%=content.preview%>,<%=content.price%>,<%=content.links%>" > 
+		            	<span class="glyphicon  glyphicon-plus-sign">
+		             	</span>
+		            </a>   
+		                    
+		        <%}%>   	
+    		</td>            
+           </tr> 
+         <% }); %>      
+    </tbody>
+  </table>
+ 
+ <div class="videocontainer" id="videocontainer"> </div> 
+
+
+</div>

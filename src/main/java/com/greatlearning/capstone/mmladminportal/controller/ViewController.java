@@ -31,11 +31,11 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Givantha Kalansuriya
  */
 @RestController
-@RequestMapping("/")
-public class HealthController {
 
- 
-  
+public class ViewController {
+
+	  
+
   /**
    * Get all users list.
    *
@@ -44,7 +44,7 @@ public class HealthController {
   @GetMapping("/health")
   public ResponseEntity<String> getAllUsers() {
 
-    return ResponseEntity.ok().body("<html><body>all good v.1</body></html");
+    return ResponseEntity.ok().body("<html><body>all good</body></html");
   }
 
  

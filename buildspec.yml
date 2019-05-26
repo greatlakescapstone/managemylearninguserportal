@@ -10,6 +10,9 @@ phases:
       - which mvn
       - mvn -version
       - pwd
+      - REPOSITORY_URI=535243943550.dkr.ecr.us-east-2.amazonaws.com/park
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
   build:
     commands:
       - echo Build started on `date`
@@ -25,14 +28,14 @@ phases:
       - cp ../runAdminPortal.sh runAdminPortal1.sh      
       - ls -al
       - tar -zcvf ../target/MMLAdminPortal.tar.gz *.*
+      - cp ../Dockerfile .  
+      - echo Building the Docker image...          
+      - docker build -t $REPOSITORY_URI:latest .
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+      - echo Build completed on `date`
 artifacts:
   files:
-# IMPORTANT
-# You have to use the tar.gz if you are manually executing CodeDeploy
-    - target/MMLAdminPortal.tar.gz
-# Use the individual files if you are using the CodeDeploy from CodePipeline
-# Reason is pipeline does not untar and errors out saying that the appspec file is not there
-#    - appfiles/appspec.yml
-#    - appfiles/mmladminportal.jar
-#    - appfiles/runAdminPortal1.sh
+    - appfiles/appspec.yml
+    - appfiles/mmladminportal.jar
+    - appfiles/runAdminPortal1.sh
   discard-paths: yes

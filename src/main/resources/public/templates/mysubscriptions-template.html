@@ -1,0 +1,94 @@
+<script src="/3rdParty/bootsnip_pjpa.js"></script>
+
+<div class="" >
+           
+  <table class="table table-striped">
+    <thead>
+      <tr>
+
+        <th>Category</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Preview</th>
+        <th>price</th>
+        <th>Link</th>
+       <!-- <th>StreamingLink</th> -->        
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+       <% _.each(contents, function(content){ %>
+           <tr>
+
+            <td> <%= content.category %> </td>
+            <td> <%= content.content_title.substring(content.content_title.indexOf('_')+1) %> </td>
+            <td> <%= content.content_title.substring(0, content.content_title.indexOf('_'))  %> </td>
+            <td> 
+ 	            <label  data-container="body" data-toggle="popover" 
+                	data-placement="top" data-content="<%= content.preview %>" > 
+	            	<span class="glyphicon glyphicon-file">
+	             	</span>
+	            </label>
+	                        
+
+			</td>
+			<td> <%= content.price %> </td>  
+			
+			
+            <td>
+            
+             <a id="videoLink" class="videoLink" contentlink="<%= content.link %>"  href="#" >
+             	<span class="glyphicon glyphicon-picture">
+             	</span>
+             </a>
+             
+            <!--  
+             
+            </td>
+            <td> 
+	            <a id="videoLink" class="videoLink" contentlink="<%= content.linkshls %>" href="<%= content.linkshls %>" > 
+	            	<span class="glyphicon glyphicon-picture">
+	             	</span>
+	            </a>
+            </td>
+             -->
+            <td> 
+            	<div class="container">
+					<div class="row" style="margin-top:40px;">
+						<div class="col-md-6">
+				    	<div class="well well-sm">
+				            <div class="text-right">
+				                <a class="btn btn-success btn-green" href="#reviews-anchor" id="open-review-box">Leave a Review</a>
+				            </div>
+				        
+				            <div class="row" id="post-review-box" style="">
+				                <div class="col-md-12">
+				                    <form accept-charset="UTF-8" action="" method="post">
+				                    	<input id="content_title" name="content_title" type="hidden" value="<%=content.content_title%>"> 
+				                        <input id="ratings-hidden" name="rating" type="hidden"> 
+				                        <div class="text-right">
+				                            <div class="stars starrr" data-rating="0"></div>
+				                            <a class="btn btn-danger btn-sm" href="#" id="close-review-box" style="margin-right: 10px;">
+				                            <span class="glyphicon glyphicon-remove"></span>Cancel</a>
+				                            <button class="btn btn-success btn-lg" type="submit">Save</button>
+				                        </div>
+				                    </form>
+				                </div>
+				            </div>
+				        </div> 
+				         
+						</div>
+					</div>
+				</div>
+
+            </td> 
+           
+           </tr> 
+         <% }); %>      
+    </tbody>
+  </table>
+ 
+ <div class="videocontainer" id="videocontainer"> </div> 
+
+
+</div>
