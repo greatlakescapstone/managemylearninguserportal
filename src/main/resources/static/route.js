@@ -23,6 +23,7 @@ var Router = Backbone.Router.extend({
     'showOrgDashboard':'showOrgDashboard',   
     'showMySubscriptions':'showMySubscriptions',
     'showAddSubscription': 'showContentDashboard',
+    'showMyWallet':'showMyWallet',
     
     
     
@@ -113,6 +114,23 @@ router.on('route:showMySubscriptions', function(){
 	}
 	mySubscriptionsPanel.render();
 });
+
+
+var walletPanel = null;
+router.on('route:showMyWallet', function(){
+	if(walletPanel == null){
+		walletPanel = new WalletPanel();
+	}else{
+		
+	}
+	walletPanel.render();
+});
+
+
+
+
+
+
 
 router.on('route:users', function(){
 	userList.render();

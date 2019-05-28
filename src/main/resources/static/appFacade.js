@@ -20,7 +20,7 @@ AppController = {
 								mmlWorkspaceData.workspace = mmlWorkspaceData.userId + "-" + data.workspaceid;
 								
 								DYNAMODB.createUserAccount(mmlWorkspaceData, {
-									onSuccess:function(data){ callback.onSuccess(); },
+									onSuccess:function(data){ callback.onSuccess(data); },
 									onFailure:function(err){ throw(err); }
 								});
 								
@@ -79,19 +79,35 @@ AppController = {
 			}
 
 		},
-		postContent: function(category, author, title, preview, price, tags, files){
+postContent: function(category, author, title, preview, priceperminute, onetimeprice, tags, files){
+			
+			category = category.trim().replace(_config.lineFeedPatternAroundString,'');
+			title = title.trim().replace(_config.lineFeedPatternAroundString,'');
+			preview = preview.trim().replace(_config.lineFeedPatternAroundString,'');
 			
 			var content_title = author+"_"+title;
-			var fileNameWithoutExtension = content_title
+			content_title = content_title.trim().replace(_config.lineFeedPattern,'');
+			
+			
 			
 			var file = files[0];
-			S3.uploadFile(file, fileNameWithoutExtension, _config.cognito.s3.bucket_course_destination, {
+			var customFileName = content_title
+			
+			var extIndex = file.type.indexOf("/");
+			if(extIndex >= 0 && !file.type.substring(extIndex+1).match(_config.videoExtRegExTypePattern)){
+				customFileName = customFileName + file.type.substring(extIndex+1);
+			}
+			
+
+			S3.uploadFile(file, customFileName, _config.cognito.s3.bucket_course_destination, {
 				
 				onSuccess: function(data){
 					
+					data.Location = data.Location.replace(_config.cognito.s3.bucket_course_destination_domain,_config.cognito.cloudfront.classfieddomain);
 					var itemDetails = {
 					        "content_title": content_title,
-					        "price":price,
+					        "price":priceperminute,
+					        "onetimeprice":onetimeprice,
 				            "category": category,
 				            "author": author,
 				            "title": title,
@@ -116,8 +132,8 @@ AppController = {
 								}
 					});
 					
-					
-					var searchTags = [category, author, title].concat(tags.split(","));
+					var authorFirstName = author.substring(0,author.indexOf(' '));
+					var searchTags = [category, author, authorFirstName, title].concat(tags.split(","));
 					
 					DYNAMODB.registerContentWithSearchTags(searchTags, content_title,	
 					{ 
@@ -130,21 +146,21 @@ AppController = {
 					
 					
 					if( file.name.match(_config.videoExtRegExPattern)){
-						S3.uploadFile(file, fileNameWithoutExtension, _config.cognito.s3.bucket_course_hls_source_origin, {
+						S3.uploadFile(file, customFileName, _config.cognito.s3.bucket_course_hls_source_origin, {
 							onSuccess:function(data){
-								itemDetails.linkshls=_config.cognito.s3.bucket_course_hls_destination_origin + "/" + fileNameWithoutExtension + "/hls/" + fileNameWithoutExtension +".m3u8";
+								itemDetails.linkshls="https://"+_config.cognito.cloudfront.hlsdomain + "/" + customFileName + "/hls/" + customFileName +".m3u8";
 								DYNAMODB.createContent(itemDetails, 
 										{
 											onSuccess(data){
-												console.log("Update data with video streaming link for  "+ fileNameWithoutExtension + "\n" + JSON.stringify(data, undefined, 2));
+												console.log("Update data with video streaming link for  "+ customFileName + "\n" + JSON.stringify(data, undefined, 2));
 											},onFailure(err){
-												console.log("Failed to update video streaming link for streaming link for  "+ fileNameWithoutExtension + "\n" + JSON.stringify(err, undefined, 2));
+												console.log("Failed to update video streaming link for streaming link for  "+ customFileName + "\n" + JSON.stringify(err, undefined, 2));
 											}
 								});
 								
 							},
 							onFailure: function(err){
-								alert("Video streaming conversion request upload failed for "+ fileNameWithoutExtension + "\n" + JSON.stringify(err, undefined, 2));
+								alert("Video streaming conversion request upload failed for "+ customFileName + "\n" + JSON.stringify(err, undefined, 2));
 								
 								
 							}

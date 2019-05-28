@@ -152,30 +152,90 @@ DYNAMODB = {
 			}
 			 
 		},
-		subscribeContent: function (data, callback) {
+		subscribeToContent: function (data, subscriptionmodel, callback) {
 		    var params = {
 		        TableName :_config.cognito.dynamodb.usersubscription,
 		        Item:{
-	        		"userid":data.userId,
-			        "content_title": data.content_title,
-			        "category": data.category,
-			        "price": data.price,
-		            "link": data.link,
-		            "preview":data.preview,
-		            "author": data.author
+	        		"userid":data.userId.trim(),
+			        "content_title": data.content_title.trim(),
+			        "category": data.category.trim(),
+			        "price": data.price.trim(),
+		            "link": data.link.trim(),
+		            "preview":data.preview.trim(),
+		            "author": data.author.trim()
 		            	
 		        }
 		    };
-		    docClient.put(params, function(err, data) {
-		    	
-		        if (err) {
-		        	callback.onFailure(err);
-		            
-		        } else {
-		        	callback.onSuccess(data);
-		            
-		        }
-		    });
+		    
+		    if(subscriptionmodel == "onetimeprice"){
+		    	DYNAMODB.queryTable("userid", _config.userId,
+						null, null, _config.cognito.dynamodb.userwallet, {
+					
+					onSuccess:function(walletItems){
+						var walletItem = walletItems.Items[0];
+						
+						var balance = 0;
+						if(walletItem){
+							
+							if(!walletItem.cumulativeCredit){
+								walletItem.cumulativeCredit = 0;
+							}
+							
+							if(!walletItem.cumulativeDebit){
+								walletItem.cumulativeDebit = 0;
+							}
+							
+							 balance = (parseFloat(walletItem.cumulativeCredit) - parseFloat(walletItem.cumulativeDebit));
+							
+							var onetimeprice = parseFloat(data.price.trim());
+							if(balance>=onetimeprice){
+								
+								DYNAMODB.updateBilling(data.price.trim(),data.content_title.trim(), {
+									onSuccess:function(){
+										docClient.put(params, function(err, data) {
+									    	
+									        if (err) {
+									        	callback.onFailure(err);
+									            
+									        } else {
+									        	callback.onSuccess(data);
+									            
+									        }
+									    });
+									},
+									onfailure:function(err){
+										alert("Failed to debit your account. Subcription cancelled. Please try later.");
+										callback.onFailure(err);
+									}
+								})
+								
+							}
+						}else{
+							alert("Insufficient balance in your wallet - (" + balance + "). Cannot continue! Please fill your wallet first.");
+						}
+						
+						
+					},
+					onFailure:function(err){
+						alert("Failed to retrieve wallet item or no record exists. Cannot continue! Please fill your wallet first, if not done so.");
+					}
+		    	});
+				
+			}else if(subscriptionmodel == "priceperminute"){
+				 docClient.put(params, function(err, data) {
+				    	
+				        if (err) {
+				        	callback.onFailure(err);
+				            
+				        } else {
+				        	callback.onSuccess(data);
+				            
+				        }
+				    });
+				
+			}
+		    
+		   
 		},
 		listMySubscriptions: function(callback) {
 			try{
@@ -195,7 +255,7 @@ DYNAMODB = {
 			    docClient.query(params, function(err, data) {
 					
 			        if (err) {
-			            throw(err);
+			            throw err;
 			        } else {
 					    for(var k=0; k<data.Items.length; k++)
 					    	contentList.push(data.Items[k]);
@@ -219,6 +279,8 @@ DYNAMODB = {
 			var i;
 			var found = 0;
 			for(i=0; i<tagSet.length; i++){
+				var tag = tagSet[i].trim().toLowerCase();
+				if(!tag) continue;
 				 params = {
 					        TableName :  _config.cognito.dynamodb.tagTbl,
 					        KeyConditionExpression: "#tag = :tagValue",
@@ -226,7 +288,7 @@ DYNAMODB = {
 					            "#tag": "content_tag"
 					        },
 					        ExpressionAttributeValues: {
-					            ":tagValue":tagSet[i].trim().toLowerCase()
+					            ":tagValue":tag
 					        }
 					    };
 
@@ -246,7 +308,7 @@ DYNAMODB = {
 					
 										console.log("fetching record for " + key);
 										params = {
-											TableName : 'Content',
+											TableName : _config.cognito.dynamodb.contentTbl,
 											KeyConditionExpression: "#tag = :tagValue",
 											ExpressionAttributeNames:{
 												"#tag": "content_title"
@@ -295,7 +357,306 @@ DYNAMODB = {
 			 
 		    		
 
+		},
+		updateContentReview: function(comment, rating, content_title, callback) {
+			
+			try{
+				
+				DYNAMODB.queryTable("userid", _config.userId,
+						"content_title", content_title, _config.cognito.dynamodb.usersubscription, {
+					
+					onSuccess:function(items){
+						var item = items.Items[0];
+						
+						item.comments = comment;
+						var oldRating = 0;
+						if(item.rating){
+							oldRating = rating;
+						}
+						item.rating = rating;
+						
+						
+						DYNAMODB.updateTable(item,  _config.cognito.dynamodb.usersubscription, {
+							
+							onSuccess:function(data){},
+							onFialure:function(err){
+								alert(err);
+								//callback.onFailure(err);
+							}
+
+						});
+						
+						DYNAMODB.queryTable("content_title", content_title, null, null, _config.cognito.dynamodb.contentTbl, {
+							
+							onSuccess:function(items){
+								var item = items.Items[0];
+								
+								item.comments = item.comments + "-" + comment;
+								if(oldRating>0){
+									var newRatingCount = parseInt(item.rating[oldRating+"star"])-1;
+									if(newRatingCount<0){
+										newRatingCount = 0;
+									}
+									item.rating[oldRating+"star"] = newRatingCount;
+								}
+								item.rating[rating+"star"] = parseInt(item.rating[rating+"star"])+1;
+								
+								DYNAMODB.updateTable(item,  _config.cognito.dynamodb.contentTbl, {
+									
+									onSuccess:function(data){callback.onSuccess(data);},
+									onFialure:function(err){
+										alert(err);
+										callback.onFailure(err);
+									}
+
+								});
+							},
+							onFialure:function(err){
+								alert(err);
+								callback.onFailure(err);
+							}
+							
+							
+							
+						});					
+						
+						
+							
+					},
+					onFialure:function(err){
+						alert(err);
+						//callback.onFailure(err);
+					}
+					
+					
+					
+				});
+
+				
+				
+				
+				
+			}catch(e){
+				alert(e); 
+				callback.onFailure(e);
+			}
+			
+	    		
+
+		},
+		addToWallet: function(amount, callback){
+			
+
+			try{
+				var lastUpdated = +new Date;
+				lastUpdated = lastUpdated + "";
+				
+				DYNAMODB.queryTable("userid", _config.userId,
+						null, null, _config.cognito.dynamodb.userwallet, {
+					
+					onSuccess:function(walletItems){
+						
+						var walletItem = walletItems.Items[0];
+						
+						
+						if(!walletItem){
+							walletItem = {
+									userid: _config.userId
+							}
+						}
+						
+						var lastCumulativeCredit = 0;
+						if(walletItem.cumulativeCredit){
+							lastCumulativeCredit = parseFloat(walletItem.cumulativeCredit);
+						}
+						walletItem.cumulativeCredit = parseFloat(lastCumulativeCredit) + parseFloat(amount);
+						
+						if(!walletItem.cumulativeDebit){
+							walletItem.cumulativeDebit = "0";
+						}
+						
+						
+						walletItem.lastUpdated = lastUpdated+"";
+						
+						var newbalance = ( parseFloat(walletItem.cumulativeCredit) - parseFloat(walletItem.cumulativeDebit));
+						DYNAMODB.updateTable(walletItem,  _config.cognito.dynamodb.userwallet, {
+							
+							onSuccess:function(data){
+								var creditItem={
+						        		"userid":_config.userId,
+						        		"timestamp": lastUpdated,
+								        "creditamount": amount+""
+							            	
+							        };
+									
+									DYNAMODB.updateTable(creditItem,  _config.cognito.dynamodb.usercredit,{
+										onSuccess:function(data){ callback.onSuccess({newBalance:newbalance}); },
+										onFailure:function(err){ throw err;}
+									});		
+								
+							},	
+							onFialure:function(err){throw err; }
+
+						});					
+										
+					},onFailure:function(err){ throw err;}
+	
+				});
+				
+			}catch(e){ 
+				alert(e);  
+				callback.onFailure(e);  
+			}
+		
+    		
+		},
+		updateBilling: function(contentPrice,contentid, callback){
+			
+
+			try{
+				var lastUpdated = +new Date;
+				lastUpdated = lastUpdated + "";
+				DYNAMODB.queryTable("userid", _config.userId,
+						null, null, _config.cognito.dynamodb.userwallet, {
+					
+					onSuccess:function(walletItems){
+						
+						var walletItem = walletItems.Items[0];
+						
+						if(walletItem){
+							var lastCumulativeDebit = 0;
+							if(walletItem.cumulativeDebit){
+								lastCumulativeDebit = parseFloat(walletItem.cumulativeDebit);
+							}
+							
+							walletItem.cumulativeDebit = parseFloat(lastCumulativeDebit) + parseFloat(contentPrice);
+							walletItem.lastUpdated = lastUpdated+"";
+							
+							var billingItem={
+				        		"userid":_config.userId,
+				        		"timestamp": lastUpdated,
+						        "content_title": contentid.trim(),
+						        "debitamount": contentPrice
+					            	
+					        };
+							
+							DYNAMODB.updateTable(billingItem,  _config.cognito.dynamodb.userbilling,{
+								onSuccess:function(data){
+									
+									DYNAMODB.updateTable(walletItem,  _config.cognito.dynamodb.userwallet, {
+										
+										onSuccess:function(data){ 
+											
+											var balance = ( parseFloat(walletItem.cumulativeCredit) - parseFloat(walletItem.cumulativeDebit));
+											if( balance <= 0 ){
+												var err = {reason:1000}
+												callback.onFailure(err); 
+									
+											}else{
+												var data = {balance: balance};
+												callback.onSuccess(data); 
+											}
+											
+										},
+										onFialure:function(err){callback.onFailure(err); }
+		
+									});
+								},
+								onFailure:function(err){ callback.onFailure(err);}
+							});						
+						}else{
+							console.log("Failed to retrieve wallet item or no record exists. Cannot continue! Please fill your wallet first, if not done so.");
+							var err = {reason:1000};
+							callback.onFailure(err);
+						}
+						
+						
+		
+					},onFailure:function(err){ throw err;}
+	
+				});
+				
+			}catch(e){
+				alert(e); 
+				callback.onFailure(e); 
+			}
+		
+    		
+		},
+		queryTable: function(queryKey, queryValue, sortKey, sortValue, tableName, callback) {
+			try{
+				
+				contentList = [];
+				var params;
+				if(sortKey){
+					params = {
+							TableName : tableName,
+							KeyConditionExpression: "#tag = :tagValue and #sortkey = :sortValue",
+					        ExpressionAttributeNames:{
+					            "#tag": queryKey,
+					            "#sortkey": sortKey
+					        },
+					        ExpressionAttributeValues: {
+					            ":tagValue":queryValue,
+					            ":sortValue":sortValue
+					        }
+						};
+				}else{
+					params = {
+							TableName : tableName,
+							KeyConditionExpression: "#tag = :tagValue",
+					        ExpressionAttributeNames:{
+					            "#tag": queryKey
+					        },
+					        ExpressionAttributeValues: {
+					            ":tagValue":queryValue
+					        }
+						};
+				}
+				
+						
+				
+			    docClient.query(params, function(err, data) {	
+			        if (err) {  throw err;  } 
+			        else {  
+			        	callback.onSuccess(data);
+			        	
+			        }
+			    });
+			    
+			    
+				    
+			}catch(e){ alert(e); callback.onFailure(e); }
+			
+			    		
+
+		},
+		updateTable: function(item, tableName, callback) {
+			try{
+				
+				 var params = {
+		        TableName :tableName,
+			        Item:item
+			    };
+			    docClient.put(params, function(err, data) {
+			    	
+			        if (err) {throw err;} else {callback.onSuccess(data); }
+		    });
+				    
+			}catch(e){
+				alert(e);
+				callback.onFailure(e);
+			}
+			
+			    		
+
 		}
+		
+		
+		
+		
+		
+		
 
 
 }

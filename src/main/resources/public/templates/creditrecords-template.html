@@ -1,0 +1,25 @@
+<div class="" >
+           
+  <table class="table table-striped">
+    <thead>
+      <tr>
+      	<th></th>
+        <th>Date/Time</th>
+        <th>Credit</th>
+      </tr>
+    </thead>
+    <tbody>
+       <% var i=0; _.each(creditRecords, function(creditItem){ %>
+           <tr>
+			<td> <%= ++i %> </td>
+			<% var recDate = new Date(creditItem.timestamp); %>
+            <td> <%= _.template.formatdate(recDate) %> </td>
+            <td> <%= creditItem.creditamount %> </td>
+                     
+           </tr> 
+         <% }); %>      
+    </tbody>
+  </table>
+ 
+
+</div>

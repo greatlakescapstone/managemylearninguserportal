@@ -12,8 +12,9 @@
         <th>StreamingLink</th> -->
         <th>Ratings</th>
         <th>Comments</th>
-        <th>price</th>
-        <th></th>
+        <th>Rate per Minute</th>
+        <th>One Time Price </th>
+        <th>Subscribe</th>
       </tr>
     </thead>
     <tbody>
@@ -71,24 +72,22 @@
 	            </label>            
 
              </td> 
-            <td> <%= content.price %> </td>                        
+            <td> <%= content.price %> </td>  
+            <td> <%= content.onetimeprice %></td>                      
         	<td>
         	    <%if(content.links.match(_config.videoExtRegExPattern)){%>
 	        		<%if(content.linkshls){%>
-		            <a id="subscribeLink" class="subscribeHlsLink" href="#" data-content="<%=_config.userId%>,<%= content.category %>,
-		                                                  <%= content.content_title %>,<%=content.author%>,<%=content.preview%>,<%=content.price%>,<%=content.linkshls%>" > 
+		            <a id="subscribeLink" class="subscribeHlsLink" href="#" subscription-model="priceperminute" data-content="<%=_config.userId%>,<%= content.category %>,<%= content.content_title %>,<%=content.author%>,<%=content.preview%>,<%=content.price%>,<%=content.linkshls%>" > 
 		            	<span class="glyphicon  glyphicon-eye-open">
 		             	</span>
 		            </a>      
 		            <%}%>
-		            <a id="subscribeLink" class="subscribeLink" href="#" data-content="<%=_config.userId%>,<%= content.category %>,
-		                                                  <%= content.content_title %>,<%=content.author%>,<%=content.preview%>,<%=content.price%>,<%=content.links%>" > 
+		            <a id="subscribeLink" class="subscribeLink" href="#" subscription-model="onetimeprice" data-content="<%=_config.userId%>,<%= content.category %>,<%= content.content_title %>,<%=content.author%>,<%=content.preview%>,<%=content.onetimeprice%>,<%=content.links%>" > 
 		            	<span class="glyphicon  glyphicon-eye-close">
 		             	</span>
 		            </a>    
 	            <%}else{%>	
-	            	<a id="subscribeLink" class="subscribeLink" href="#" data-content="<%=_config.userId%>,<%= content.category %>,
-		                                                  <%= content.content_title %>,<%=content.author%>,<%=content.preview%>,<%=content.price%>,<%=content.links%>" > 
+	            	<a id="subscribeLink" class="subscribeLink" href="#" subscription-model="onetimeprice"  data-content="<%=_config.userId%>,<%= content.category %>,<%= content.content_title %>,<%=content.author%>,<%=content.preview%>,<%=content.onetimeprice?content.onetimeprice:content.price%>,<%=content.links%>" > 
 		            	<span class="glyphicon  glyphicon-plus-sign">
 		             	</span>
 		            </a>   

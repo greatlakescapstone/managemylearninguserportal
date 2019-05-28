@@ -67,7 +67,8 @@ tpl.loadTemplates([
 	'orgregistrationform-template', 'userloginform-template',
 	'orgloginform-template', 'userdashboard-template',
 	'orgdashboard-template','subscribecontent-template', 'searchcontentresult-template',
-	'mysubscriptions-template','videostreaming-template','video-template' ], function() {
+	'mysubscriptions-template','videostreaming-template','video-template',
+	'wallet-template', 'creditrecords-template'], function() {
     
     Backbone.history.start();
     DYNAMODB.init();
