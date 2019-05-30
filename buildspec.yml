@@ -32,7 +32,7 @@ phases:
       - cd appfiles
       - cp ../target/managemylearning-user-portal-0.0.1-SNAPSHOT.jar mmluserportal.jar
       #- cp ../appspec.yml .
-      - cp ../runUserPorta.sh runUserPortal.sh       
+      - cp ../runUserPortal.sh runUserPortal.sh       
       - ls -al
       #- tar -zcvf ../target/MMLUserPortal.tar.gz *.*
       - cd ..
