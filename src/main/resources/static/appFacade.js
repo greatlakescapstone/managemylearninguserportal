@@ -79,7 +79,86 @@ AppController = {
 			}
 
 		},
-postContent: function(category, author, title, preview, priceperminute, onetimeprice, tags, files){
+		//publishes existing user content to externals (the actual content is already uploaded)
+		publishMyContent:function(contentId, callback){
+			DYNAMODB.queryTable("content_title", contentId, null, null, _config.cognito.dynamodb.contentTbl, {
+				
+				onSuccess:function(items){
+					var item = items.Items[0];
+					
+					if(item.restricted != "-"){
+						var tags = item.tags;
+						var authorFirstName = item.author.substring(0,item.author.indexOf(' '));
+						var searchTags = [item.category, item.author, authorFirstName, item.title].concat(tags.split(","));
+						
+						DYNAMODB.registerContentWithSearchTags(searchTags, item.content_title,	
+						{ 
+							onSuccess(data){
+								console.log("SearchTag succeeded: " + "\n" + JSON.stringify(data, undefined, 2));
+								
+								
+								item.restricted="-";
+								item.ownedByWorkspace=_config.user.workspace;
+								item.ownedByWorkspaceUserId=_config.user.userId;
+								DYNAMODB.updateTable(item,  _config.cognito.dynamodb.contentTbl, {
+									
+									onSuccess:function(data){
+										alert("published successfully");
+										callback.onSuccess(data);
+										DYNAMODB.updateBilling(_config.publishingCost,item.content_title, "Billed for publishing", false,{
+											onSuccess:function(){ },
+											onFailure:function(err){ }
+										});
+										
+									},
+									onFialure:function(err){
+										alert("failed to publish " + err);
+										//callback.onFailure(err);
+									}
+
+								});
+	
+						        
+							},onFailure(err){
+								console.log("Unable to add searchTag: " + "\n" + JSON.stringify(err, undefined, 2));
+							}
+						});
+					}
+
+					
+					
+				},
+				onFialure:function(err){
+					alert(err);
+					callback.onFailure(err);
+				}
+				
+				
+				
+			});	
+			
+		},
+		postContentForSelf: function(category, author, title, preview, priceperminute, onetimeprice, tags, files){
+			
+			var content_title = author+"_"+title;
+			content_title = content_title.trim().replace(_config.lineFeedPattern,'');
+			
+			DYNAMODB.updateBilling(_config.selfUploadCost,content_title, "Billed for uploading", false,{
+				onSuccess:function(){
+					
+					
+					AppController.postContent(category, author, title, preview, priceperminute, onetimeprice, tags, files)
+				},
+				onFailure:function(err){
+					alert("Failed to debit your account. Subcription cancelled. Please try later.");
+					callback.onFailure(err);
+				}
+			});
+			
+		},
+		
+		//upload and publishes new content
+		postContent: function(category, author, title, preview, priceperminute, onetimeprice, tags, files){
 			
 			category = category.trim().replace(_config.lineFeedPatternAroundString,'');
 			title = title.trim().replace(_config.lineFeedPatternAroundString,'');
@@ -120,7 +199,12 @@ postContent: function(category, author, title, preview, priceperminute, onetimep
 					        	"2star":0,
 					        	"1star":0,
 					        },
-					        "comments":"-"
+					        "comments":"-",
+					        "tags":tags,
+					        "restricted":_config.user.workspace,
+					        "ownedByWorkspace":_config.user.workspace,
+					        "ownedByWorkspaceUserId":_config.user.userId,
+					        
 					}
 					
 					DYNAMODB.createContent(itemDetails, 
@@ -133,7 +217,7 @@ postContent: function(category, author, title, preview, priceperminute, onetimep
 					});
 					
 					var authorFirstName = author.substring(0,author.indexOf(' '));
-					var searchTags = [category, author, authorFirstName, title].concat(tags.split(","));
+					var searchTags = [_config.myWSContentTag];
 					
 					DYNAMODB.registerContentWithSearchTags(searchTags, content_title,	
 					{ 
@@ -166,16 +250,7 @@ postContent: function(category, author, title, preview, priceperminute, onetimep
 							}
 						});
 					}
-					
-					
-					
-					
-						
-					
-					
-					
-					
-					
+									
 					
 				},
 				onFailure: function(err){
@@ -187,5 +262,7 @@ postContent: function(category, author, title, preview, priceperminute, onetimep
 
 			
 		}
+		
+		
 		
 }

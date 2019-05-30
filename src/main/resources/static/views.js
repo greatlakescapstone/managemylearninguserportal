@@ -139,9 +139,25 @@ var SignInAsUser = Backbone.View.extend({
 				COGNITO.login(loginDetails.userId, loginDetails.password, {
 					onSuccess:function(){
 						_config.userId = loginDetails.userId;
-						router.navigate('showUserDashboard', {
-							trigger : true
+						DYNAMODB.queryTable("userId", _config.userId,
+								null, null, _config.cognito.dynamodb.useraccounts,{
+							
+							onSuccess:function(userItems){
+								
+								_config.user = userItems.Items[0];
+								_config.myWSContentTag = "@"+_config.user.workspace + "@";
+								
+								router.navigate('showUserDashboard', {
+									trigger : true
+								});
+							},
+							onFailure(err){
+								alert("Could not login. failed to create session");
+							}
+							
 						});
+								
+						
 						
 					}, onFailure:function(err){
 						
@@ -219,7 +235,7 @@ var UserDashboard = Backbone.View.extend({
 		'click #manageAddSubscription' : 'showAddSubscription',
 		'click #manageMyPrivateWorkspace' : 'showPrivateWorkspace',
 		'click #manageMyWallet' : 'showMyWallet',
-		'click #manageyBilling' : 'shoMyBilling'
+		'click #manageMyBilling' : 'showMyBilling'
 			
 	},
 	logout: function(ev){
@@ -236,15 +252,15 @@ var UserDashboard = Backbone.View.extend({
 		return false;
 	},
 	showPrivateWorkspace: function(ev){
-		router.navigate('workspacedashboard', {trigger:true})
+		router.navigate('showMyFilesPanel', {trigger:true})
 		return false;
 	},
 	showMyWallet: function(ev){
 		router.navigate('showMyWallet', {trigger:true})
 		return false;
 	},
-	shoMyBilling: function(ev){
-		router.navigate('contentdashboard', {trigger:true})
+	showMyBilling: function(ev){
+		router.navigate('showMyBilling', {trigger:true})
 		return false;
 	}
 	 
@@ -312,7 +328,7 @@ var ContentDashboard = Backbone.View.extend({
 	},
 	events: {
 		'submit .searchContentByTags' : 'searchContentByTags',
-		'click .uploadNewContent': 'uploadNewContent'
+		'click  #uploadNewContent': 'uploadNewContent'
 	},
 	
 	searchContentByTags: function (ev) {
@@ -358,7 +374,7 @@ var SearchContentResultTable = Backbone.View.extend({
 				
 				window.popover();
 			},
-			onFalure: function(){}  
+			onFailure: function(){}  
 		});
 		
 	},
@@ -409,7 +425,7 @@ var MySubscriptionsPanel = Backbone.View.extend({
 				
 				window.popover();
 			},
-			onFalure: function(){}  
+			onFailure: function(){}  
 		});
 		
 	},
@@ -515,6 +531,103 @@ var VideoStreamingPane = Backbone.View.extend({
 
 
 
+var myFilesPanel;
+var MyFilesPanel = Backbone.View.extend({
+	el:'.dashboardcontent',
+	render: function(){
+		
+		var that = this
+
+		DYNAMODB.searchContentByTags(  _config.myWSContentTag, {
+			onSuccess: function(data){
+				var fileItems = data;
+				var template  =_.template(tpl.get('myfiles-template'));
+				var templateData = {fileItems: fileItems}
+				that.$el.html(template(templateData));
+				window.popover();
+
+			},
+			onFailure: function(){}  
+		});
+		
+	},
+	events: {
+		'click .uploadNewContent':'uploadNewContent',
+		'click #videoLink' : 'setVideoLink',
+		'click #publishLink': 'publishLink'
+			
+	},
+	uploadNewContent: function(){
+		router.navigate("uploadNewContent", {trigger:true});
+		return false;
+	},
+	publishLink: function(ev){
+		var contentId = $(ev.currentTarget).attr( 'contenttitle' );
+		AppController.publishMyContent(contentId, {
+			
+			onSuccess:function(){},
+			onFailure:function(){}
+		});
+		
+		return false;
+	},
+	setVideoLink: function(ev){
+		 console.log("video data %o", ev);
+		 var link= $(ev.currentTarget).attr( 'contentlink' );
+		 var contenttitle= $(ev.currentTarget).attr( 'contenttitle' );
+		 var contentprice= $(ev.currentTarget).attr( 'contentprice' );
+		 if(link ){
+			
+			if(link.match(_config.videoExtRegExPattern)){
+				window.currentVideoLink = link;
+				window.runningContentMinutePrice = 0;
+				window.content_title = contenttitle;
+				
+				
+				var video;
+				if(link.match(_config.videoStreamingRegExPattern)){
+					
+					if(videoStreamingPane != null){
+						try{videoStreamingPane.dispose()}catch(e){console.log(e);}
+					}
+					videoStreamingPane = new VideoStreamingPane();
+						
+					
+					video = videoStreamingPane;
+				}else{
+					if(videoPane != null){
+						try{videoPane.dispose()}catch(e){console.log(e);}
+					}
+					videoPane = new VideoPane();
+				
+					video = videoPane;
+				}
+				
+				try{
+					video.render();
+					document.getElementById("autoClickModalVideo").click();
+					
+				}catch(e){
+					console.log(e);
+				}
+			}else{
+				window.open(link,"resizeable,scrollbar"); 
+			}
+			
+			
+		}else{
+			console.log("no content link available");
+		}
+		
+		
+		return false;
+		 
+	 }
+});
+
+
+
+
 var WalletPanel = Backbone.View.extend({
 	el:'.dashboardcontent',
 	render: function(){
@@ -545,7 +658,7 @@ var WalletPanel = Backbone.View.extend({
 				
 				creditRecordsTable.render();
 			},
-			onFalure: function(){}  
+			onFailure: function(){}  
 		});
 		
 	
@@ -556,7 +669,7 @@ var WalletPanel = Backbone.View.extend({
 	addToWallet: function(ev){
 		
 				var walletDetails = $(ev.currentTarget).serializeObject();
-				DYNAMODB.addToWallet(walletDetails.creditamount,  {
+				DYNAMODB.addToWallet(_config.userId, walletDetails.creditamount, "credit transfer",  {
 					onSuccess:function(data){
 						
 						creditRecordsTable.render();
@@ -597,10 +710,9 @@ var CreditRecordsTable = Backbone.View.extend({
 				var template  =_.template(tpl.get('creditrecords-template'));
 				var templateData = {creditRecords: creditItems}
 				that.$el.html(template(templateData));
-				
-				window.popover();
+
 			},
-			onFalure: function(){}  
+			onFailure: function(){}  
 		});
 		
 	},
@@ -612,6 +724,29 @@ var CreditRecordsTable = Backbone.View.extend({
 
 
 
+var DebitRecordsTable = Backbone.View.extend({
+	el:'.dashboardcontent',
+	render: function(){
+		
+		var that = this
+
+		DYNAMODB.queryTable("userid", _config.userId, null, null,  _config.cognito.dynamodb.userbilling, {
+			onSuccess: function(data){
+				var debitItems = data.Items;
+				var template  =_.template(tpl.get('debitrecords-template'));
+				var templateData = {debitRecords: debitItems}
+				that.$el.html(template(templateData));
+
+			},
+			onFailure: function(){}  
+		});
+		
+	},
+	events: {
+		
+			
+	}
+});
 
 
 
@@ -662,7 +797,7 @@ var UploadContentDashboard = Backbone.View.extend({
 			var formData = new FormData($(ev.currentTarget));
 			var loginDetails = $(ev.currentTarget).serializeObject();
 			
-			AppController.postContent(loginDetails.newcategory, 
+			AppController.postContentForSelf(loginDetails.newcategory, 
 					loginDetails.newauthor,loginDetails.title,
 					loginDetails.preview, loginDetails.price, loginDetails.oneTimePrice,
 					loginDetails.tags, document.getElementById('file').files);

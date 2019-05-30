@@ -50,15 +50,15 @@ import com.greatlearning.capstone.mmladminportal.repository.AdminRepository;
 @RestController
 @RequestMapping("/api/v1")
 public class SessionController {
-
+/*
   @Autowired
   private AdminRepository adminRepository;
   
-  /**
+  *//**
    * Get all admins list.
    *
    * @return the list
-   */
+   *//*
   @PostMapping(path="/session", consumes = "application/json", produces = "application/json")
   
   public ResponseEntity<Admin> validateSessoin(@RequestBody Admin admin) {
@@ -70,23 +70,23 @@ public class SessionController {
   }
 
   
-  /**
+  *//**
    * Get all admins list.
    *
    * @return the list
-   */
+   *//*
   @GetMapping(path="/admins", produces = "application/json")
   public List<Admin> getAllAdmins() {
     return adminRepository.findAll();
   }
 
-  /**
+  *//**
    * Gets admins by id.
    *
    * @param adminId the admin id
    * @return the admins by id
    * @throws ResourceNotFoundException the resource not found exception
-   */
+   *//*
   @GetMapping(path="/admins/{id}",  produces = "application/json")
   public ResponseEntity<Admin> getAdminsById(@PathVariable(value = "id") Long adminId)
       throws ResourceNotFoundException {
@@ -97,25 +97,25 @@ public class SessionController {
     return ResponseEntity.ok().body(admin);
   }
 
-  /**
+  *//**
    * Create admin admin.
    *
    * @param admin the admin
    * @return the admin
-   */
+   *//*
   @PostMapping(path="/admins", consumes = "application/json", produces = "application/json")
   public Admin createAdmin( @RequestBody Admin admin) {
     return adminRepository.save(admin);
   }
 
-  /**
+  *//**
    * Update admin response entity.
    *
    * @param adminId the admin id
    * @param adminDetails the admin details
    * @return the response entity
    * @throws ResourceNotFoundException the resource not found exception
-   */
+   *//*
   @PutMapping(path="/admins/{id}", consumes = "application/json", produces = "application/json")
   public ResponseEntity<Admin> updateAdmin(
       @PathVariable(value = "id") Long adminId, @Valid @RequestBody Admin adminDetails)
@@ -135,13 +135,13 @@ public class SessionController {
     return ResponseEntity.ok(updatedAdmin);
   }
 
-  /**
+  *//**
    * Delete admin map.
    *
    * @param adminId the admin id
    * @return the map
    * @throws Exception the exception
-   */
+   *//*
   @DeleteMapping(path="/admins/{id}", consumes = "application/json", produces = "application/json")
   public Map<String, Boolean> deleteAdmin(@PathVariable(value = "id") Long adminId) throws Exception {
     Admin admin =
@@ -153,5 +153,5 @@ public class SessionController {
     Map<String, Boolean> response = new HashMap<>();
     response.put("deleted", Boolean.TRUE);
     return response;
-  }
+  }*/
 }

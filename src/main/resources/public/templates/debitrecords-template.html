@@ -5,17 +5,19 @@
       <tr>
       	<th></th>
         <th>Date/Time</th>
-        <th>Credit</th>
+        <th>Item</th>
+        <th>Debit</th>  
+        <th>Note</th>      
       </tr>
     </thead>
     <tbody>
-       <% var i=0; _.each(creditRecords, function(creditItem){ %>
+       <% var i=0; _.each(debitRecords, function(debitItem){ %>
            <tr>
 			<td> <%= ++i %> </td>
-			<% var recDate = new Date(creditItem.timestamp); %>
-            <td> <%= recDate.toDateString() + "-" + recDate.toTimeString() %> </td>
-            <td> <%= creditItem.creditamount %> </td>
-                     
+            <td> <%= new Date(parseFloat(debitItem.timestamp)) %> </td>
+            <td> <%= debitItem.content_title %> </td>
+            <td> <%= debitItem.debitamount %> </td>
+           	<td> <%= debitItem.note %> </td>          
            </tr> 
          <% }); %>      
     </tbody>

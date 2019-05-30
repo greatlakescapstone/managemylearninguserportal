@@ -60,7 +60,7 @@ tpl = {
 };
 
 tpl.loadTemplates([ 
-	'admindashboard-template', 'newcontent-template',
+	'admindashboard-template', 
 	
 	
 	'home-template', 'userregistrationform-template', 
@@ -68,7 +68,8 @@ tpl.loadTemplates([
 	'orgloginform-template', 'userdashboard-template',
 	'orgdashboard-template','subscribecontent-template', 'searchcontentresult-template',
 	'mysubscriptions-template','videostreaming-template','video-template',
-	'wallet-template', 'creditrecords-template'], function() {
+	'wallet-template', 'creditrecords-template','debitrecords-template',
+	'newcontent-template','myfiles-template'], function() {
     
     Backbone.history.start();
     DYNAMODB.init();

@@ -23,8 +23,10 @@ var Router = Backbone.Router.extend({
     'showOrgDashboard':'showOrgDashboard',   
     'showMySubscriptions':'showMySubscriptions',
     'showAddSubscription': 'showContentDashboard',
+    'showMyFilesPanel': 'showMyFilesPanel',
+    'uploadNewContent': 'uploadNewContent',
     'showMyWallet':'showMyWallet',
-    
+    'showMyBilling':'showMyBilling',
     
     
     
@@ -33,7 +35,7 @@ var Router = Backbone.Router.extend({
     'admindashboard': 'showAdminDashboard',
     'workspacedashboard': 'showDashboard',
     'contentdashboard':'showContentDashboard',
-    'uploadContentDashboard': 'uploadContentDashboard',
+    
     'searchAndShowContentResults':'searchAndShowContentResults',
     'showUser': 'users'
   }
@@ -83,15 +85,6 @@ router.on('route:showContentDashboard', function(){
 	content.render();
 });
 
-/*var uploadContent = null;
-router.on('route:uploadContentDashboard', function(){
-	if(uploadContent == null){
-		var uploadContent = new UploadContentDashboard ();
-	}else{
-		
-	}
-	uploadContent.render();
-});*/
 
 var contentResultTable = null;
 router.on('route:showAddSubscription', function(){
@@ -116,6 +109,28 @@ router.on('route:showMySubscriptions', function(){
 });
 
 
+var showMyFilesPanel = null;
+router.on('route:showMyFilesPanel', function(){
+	if(showMyFilesPanel == null){
+		var showMyFilesPanel = new MyFilesPanel ();
+	}else{
+		
+	}
+	showMyFilesPanel.render();
+});
+
+var uploadNewContent = null;
+router.on('route:uploadNewContent', function(){
+	if(uploadNewContent == null){
+		var uploadNewContent = new UploadContentDashboard ();
+	}else{
+		
+	}
+	uploadNewContent.render();
+});
+
+
+
 var walletPanel = null;
 router.on('route:showMyWallet', function(){
 	if(walletPanel == null){
@@ -127,8 +142,17 @@ router.on('route:showMyWallet', function(){
 });
 
 
+var debitRecordsTable = null;
+router.on('route:showMyBilling', function(){
+	if(debitRecordsTable == null){
+		debitRecordsTable = new DebitRecordsTable();
+	}else{
+		
+	}
+	debitRecordsTable.render();
+});
 
-
+debitRecordsTable
 
 
 

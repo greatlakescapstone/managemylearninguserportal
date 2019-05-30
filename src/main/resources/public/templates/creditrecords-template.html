@@ -6,16 +6,17 @@
       	<th></th>
         <th>Date/Time</th>
         <th>Credit</th>
+        <th>Note</th>        
       </tr>
     </thead>
     <tbody>
        <% var i=0; _.each(creditRecords, function(creditItem){ %>
            <tr>
 			<td> <%= ++i %> </td>
-			<% var recDate = new Date(creditItem.timestamp); %>
-            <td> <%= _.template.formatdate(recDate) %> </td>
+			
+            <td> <%= new Date(parseFloat(creditItem.timestamp)) %> </td>
             <td> <%= creditItem.creditamount %> </td>
-                     
+            <td> <%= creditItem.note %> </td>         
            </tr> 
          <% }); %>      
     </tbody>

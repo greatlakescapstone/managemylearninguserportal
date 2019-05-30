@@ -62,17 +62,20 @@
 	                    	if((newTimeStamp - lastUpdatedTimeStamp) >= oneminute){
 	                    		
 	                    		lastUpdatedTimeStamp = newTimeStamp;
-	                    		DYNAMODB.updateBilling(window.runningContentMinutePrice,window.content_title, {
-	                    			onSuccess:function(data){
-	                    				console.log("Updated billing with amount. Total credit left=%o. Please update your balance to continue smoothly", data.balance);
-	                    			},onFailure:function(err){
-	                    				if(err.reason == 1000){
-	                    					alert("Your credit balance is negative. Please add amount to your wallet to continue.");
-	                    					selfDispose();
-	                    				}
-	                    			}
-	                    			
-	                    		});
+	                    		if(window.runningContentMinutePrice <= 0){
+	                    			DYNAMODB.updateBillingAndRevenueOnContentSharing(window.runningContentMinutePrice,window.content_title, false{
+		                    			onSuccess:function(data){
+		                    				console.log("Updated billing with amount. Total credit left=%o. Please update your balance to continue smoothly", data.balance);
+		                    			},onFailure:function(err){
+		                    				if(err.reason == 1000){
+		                    					alert("Your credit balance is negative. Please add amount to your wallet to continue.");
+		                    					selfDispose();
+		                    				}
+		                    			}
+		                    			
+		                    		});
+	                    		}
+	                    		
 	                    	}
 	                    	
 	                    	console.log("new video data reading from buffer");

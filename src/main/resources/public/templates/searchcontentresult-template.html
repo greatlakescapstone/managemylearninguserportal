@@ -18,7 +18,10 @@
       </tr>
     </thead>
     <tbody>
-       <% _.each(contents, function(content){ %>
+       <% _.each(contents, function(content){ 
+       		if(!content.restricted || content.restricted == '-' || content.restricted == _config.user.workspace){
+       
+       %>
            <tr>
            	<td></td>
             <td> <%= content.category %> </td>
@@ -53,7 +56,7 @@
             <td> 
             	
  	            <label  data-container="body" data-toggle="popover" 
-                	data-placement="top" data-content="<%= content.rating %>" > 
+                	data-placement="top" data-content='<%= JSON.stringify(content.rating) %>' > 
 	            	<span class="glyphicon glyphicon-file">
 	             	</span>
 	            </label>
@@ -95,6 +98,7 @@
 		        <%}%>   	
     		</td>            
            </tr> 
+           <%}%>
          <% }); %>      
     </tbody>
   </table>

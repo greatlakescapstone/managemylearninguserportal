@@ -1,0 +1,103 @@
+<div class="" >
+<h2>List my files</h2>
+	<div>
+	  	<button type="button" class="uploadNewContent btn btn-info">
+      		<span class="glyphicon glyphicon-upload"></span> 
+      		Upload New Contents. 
+      		
+  		</button>  
+  		<br> <br>
+      	<font color="red"> (** You will be billed Rs 5/- for every file upload and file publish) </font>
+	</div>
+     
+  <table class="table table-striped">
+    <thead>
+      <tr>
+      	<th></th>
+        <th>Category</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Preview</th>
+
+        <th>Ratings</th>
+        <th>Comments</th>
+        <th>Rate per Minute</th>
+        <th>One Time Price </th>
+        <th>Link</th>
+        <!-- <th>StreamingLink</th>   -->      
+        <th>Publish</th>
+      </tr>
+    </thead>
+    <tbody>
+       <% _.each(fileItems, function(content){ %>
+           <tr>
+           	<td></td>
+            <td> <%= content.category %> </td>
+            <td> <%= content.title %> </td>
+            <td> <%= content.author %> </td>
+            <td> 
+ 	            <label  data-container="body" data-toggle="popover" 
+                	data-placement="top" data-content="<%= content.preview %>" > 
+	            	<span class="glyphicon glyphicon glyphicon-th-list">
+	             	</span>
+	            </label>
+	                        
+
+			</td>
+			 
+
+             
+            <td> 
+            	
+ 	            <label  data-container="body" data-toggle="popover" 
+                	data-placement="top" data-content='<%= JSON.stringify(content.rating) %>' > 
+	            	<span class="glyphicon glyphicon-star">
+	             	</span>
+	            </label>
+	                       	
+
+            </td>
+            <td> 
+				<label href="#" data-container="body" data-toggle="popover" 
+                	data-placement="top" data-content="<%= content.comments %>" > 
+	            	<span class="glyphicon glyphicon glyphicon-th-list">
+	             	</span>
+	            </label>            
+
+             </td> 
+            <td> <%= content.price %> </td>  
+            <td> <%= content.onetimeprice %></td>
+            
+            <td>
+            
+             <a id="videoLink" class="videoLink" contentlink="<%= content.links %>"  href="#" >
+             	<span class="glyphicon glyphicon-picture">
+             	</span>
+             </a>
+             
+             
+            </td>
+            <!-- <td> 
+	            <a id="videoLink" class="videoLink" contentlink="<%= content.linkshls %>" href="<%= content.linkshls %>" > 
+	            	<span class="glyphicon 	glyphicon glyphicon-facetime-video">
+	             	</span>
+	            </a>
+            </td>
+                   -->                            
+        	<td>
+        	   <a id="publishLink" class="publishLink" href="#" contenttitle="<%= content.content_title %>" > 
+		            	<span class="glyphicon  glyphicon glyphicon-share">
+      		<font color="red">Rs 5/-</font>
+		             	</span>
+		      </a>
+    		</td>         
+    		   
+           </tr> 
+         <% }); %>      
+    </tbody>
+  </table>
+ 
+ <div class="videocontainer" id="videocontainer"> </div> 
+
+
+</div>
