@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: openjdk11
+      java: openjdk8
       docker: 18      
     commands:
       - echo Nothing to install, container image should have it all based on what we selected
