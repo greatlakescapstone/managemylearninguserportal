@@ -62,7 +62,7 @@
 	                    	if((newTimeStamp - lastUpdatedTimeStamp) >= oneminute){
 	                    		
 	                    		lastUpdatedTimeStamp = newTimeStamp;
-	                    		if(window.runningContentMinutePrice <= 0){
+	                    		if(window.runningContentMinutePrice > 0){
 	                    			DYNAMODB.updateBillingAndRevenueOnContentSharing(window.runningContentMinutePrice,window.content_title, false,{
 		                    			onSuccess:function(data){
 		                    				console.log("Updated billing with amount. Total credit left=%o. Please update your balance to continue smoothly", data.balance);

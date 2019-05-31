@@ -1,3 +1,9 @@
+var Config = Backbone.Collection.extend({
+	url: '/config'
+});
+
+
+
 
 var Users = Backbone.Collection.extend({
 	url: '/users'

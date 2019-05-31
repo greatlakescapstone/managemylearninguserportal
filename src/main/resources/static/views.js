@@ -4,7 +4,35 @@ var Home = Backbone.View.extend({
 	render: function(){
 		var that = this;
 		var template  =_.template(tpl.get('home-template'));
-		that.$el.html(template);	
+		
+		
+		var config = new Config();
+		config.fetch({
+			success: function (config){
+				console.log(" config = %o", config.models)
+				_config.init(config.models[0]);
+				
+				
+				
+				
+
+				that.$el.html(template);	
+				
+				
+			},
+			error: function(){
+				console.log("some problem accessing server");	
+				
+
+				that.$el.html(template);	
+			}
+		});
+		
+		
+		
+		
+		
+		
 	},events: {
 		'click #registerAsOrg' : 'registerAsOrg',
 		'click #registerAsUser' : 'registerAsUser',
@@ -335,10 +363,8 @@ var ContentDashboard = Backbone.View.extend({
 			ev.preventDefault();
 			var data = $(ev.currentTarget).serializeObject();
 			window.currentSearchCriteria = data.searchByTags;
-			if(contentResultTable == null){
-				
-				contentResultTable = new SearchContentResultTable();
-			}
+			var contentResultTable = new SearchContentResultTable();
+			
 			contentResultTable.render();
 	  
 	    return false;
@@ -653,8 +679,8 @@ var WalletPanel = Backbone.View.extend({
 				that.$el.html(template(templateData));
 				
 				
-				if(creditRecordsTable == null)
-					creditRecordsTable = new CreditRecordsTable();
+				
+				creditRecordsTable = new CreditRecordsTable();
 				
 				creditRecordsTable.render();
 			},

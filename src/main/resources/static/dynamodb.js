@@ -175,7 +175,8 @@ DYNAMODB = {
 			        "price": data.price.trim(),
 		            "link": data.link.trim(),
 		            "preview":data.preview.trim(),
-		            "author": data.author.trim()
+		            "author": data.author.trim(),
+		            "subscriptionmodel": subscriptionmodel
 		            	
 		        }
 		    };

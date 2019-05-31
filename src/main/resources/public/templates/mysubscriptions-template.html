@@ -9,7 +9,7 @@
         <th>Title</th>
         <th>Author</th>
         <th>Preview</th>
-        <th>price</th>
+        <th>Rate Per Minute of View</th>
         <th>Link</th>
        <!-- <th>StreamingLink</th> -->        
         <th></th>
@@ -31,7 +31,13 @@
 	                        
 
 			</td>
-			<td> <%= content.price %> </td>  
+			<td> 
+			<% if(content.subscriptionmodel && ( content.subscriptionmodel == "onetimeprice")){ %>
+			0
+			<% }else { %>
+			<%= content.price %> 
+			<% } %>
+			</td>  
 			
 			
             <td>
