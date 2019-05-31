@@ -128,12 +128,15 @@ DYNAMODB = {
 		    });
 		},
 		registerContentWithSearchTags: function(searchtags, contenttitle, callback){
-			var params ; 
-			var i;
+			
 			try{
+				var params ; 
+				var i;
 				var isError = false;
 				for(i=0; i<searchtags.length && !isError; i++){
-					var tag = searchtags[i].trim().toLowerCase();
+					var tag = searchtags[i].trim().replace(_config.lineFeedPatternAroundString,'').toLowerCase();
+					if(!tag) continue;
+					
 					params = {
 					        TableName :_config.cognito.dynamodb.tagTbl,
 					        Item:{

@@ -236,6 +236,7 @@ AppController = {
 								DYNAMODB.createContent(itemDetails, 
 										{
 											onSuccess(data){
+												alert("Successfully uploaded video content");
 												console.log("Update data with video streaming link for  "+ customFileName + "\n" + JSON.stringify(data, undefined, 2));
 											},onFailure(err){
 												console.log("Failed to update video streaming link for streaming link for  "+ customFileName + "\n" + JSON.stringify(err, undefined, 2));
@@ -249,6 +250,8 @@ AppController = {
 								
 							}
 						});
+					}else{
+						alert("Successfully uploaded content");
 					}
 									
 					
