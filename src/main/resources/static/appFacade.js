@@ -20,7 +20,11 @@ AppController = {
 								mmlWorkspaceData.workspace = mmlWorkspaceData.userId + "-" + data.workspaceid;
 								
 								DYNAMODB.createUserAccount(mmlWorkspaceData, {
-									onSuccess:function(data){ callback.onSuccess(data); },
+									onSuccess:function(data){ 
+										alert("Congratulations!! User registeration is successful. Add more")
+										callback.onSuccess(data); 
+										
+									},
 									onFailure:function(err){ throw(err); }
 								});
 								
@@ -59,7 +63,11 @@ AppController = {
 											mmlWorkspaceOrgData.orgName, mmlWorkspaceOrgData.phoneNumber, mmlWorkspaceOrgData.email,{
 										
 										//success callback
-										onSuccess:function(data){ callback.onSuccess(data);},
+										onSuccess:function(data){ 
+											alert("Congratulations!! Organisation registeration is successful. Add more")
+
+											callback.onSuccess(data);
+										},
 										
 										onFailure:function(err){throw(err);	}
 									});
@@ -150,7 +158,7 @@ AppController = {
 					AppController.postContent(category, author, title, preview, priceperminute, onetimeprice, tags, files)
 				},
 				onFailure:function(err){
-					alert("Failed to debit your account. Subcription cancelled. Please try later.");
+					alert("Subcription cancelled. Failed to debit your account. Maybe wallet balance is negative. Please check and retry.");
 					callback.onFailure(err);
 				}
 			});

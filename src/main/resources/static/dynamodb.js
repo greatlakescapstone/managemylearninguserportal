@@ -167,6 +167,25 @@ DYNAMODB = {
 		},
 		subscribeToContent: function (data, subscriptionmodel, callback) {
 			
+			DYNAMODB.queryTable("userid", _config.userId,
+					"content_title", data.content_title.trim(), _config.cognito.dynamodb.usersubscription, {
+				
+				onSuccess:function(items){
+					if(itema.Items && itema.Items.length>0){
+						alert("Already subscribed");	
+					}else{
+						
+						DYNAMODB.billAndSubscribe(data, subscriptionmodel, callback);
+					}
+	
+				},
+				onFailure:function(err){
+					DYNAMODB.billAndSubscribe(data, subscriptionmodel, callback);
+				}
+			});
+		},
+		
+		billAndSubscribe: function (data, subscriptionmodel, callback){
 			data.price = data.price.trim();
 			data.content_title = data.content_title.trim();
 		    var params = {
@@ -530,19 +549,19 @@ DYNAMODB = {
     		
 		},
 		updateBillingAndRevenueOnContentSharing:function(contentPrice,contentid, negativeAllowed, callback){
-			DYNAMODB.updateBilling(contentPrice,contentid, "Billed for content sharing", negativeAllowed, {
+			DYNAMODB.updateBilling(contentPrice,contentid, "Billed for Subscription", negativeAllowed, {
 				
-				onSuccess: function(){
+				onSuccess: function(data){
 					DYNAMODB.addRevenueForContent(contentid.trim(), contentPrice, {
 						onSuccess:function(){},
 						onFailure:function(){}
 					});
 					
-					callback.onSuccess();
+					callback.onSuccess(data);
 				},
 				
-				onFailure:function(){
-					callback.onFailure();
+				onFailure:function(err){
+					callback.onFailure(err);
 				}
 			})
 		},

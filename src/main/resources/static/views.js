@@ -17,7 +17,10 @@ var Home = Backbone.View.extend({
 				
 
 				that.$el.html(template);	
-				
+
+				var ele = document.getElementById("userOrgName");
+				ele.innerHTML = ""
+
 				
 			},
 			error: function(){
@@ -162,7 +165,7 @@ var SignInAsUser = Backbone.View.extend({
 		'click #cancelSignIn' : 'cancelSignIn'
 	},
 	signin: function(ev){
-		
+		try{
 				var loginDetails = $(ev.currentTarget).serializeObject();
 				COGNITO.login(loginDetails.userId, loginDetails.password, {
 					onSuccess:function(){
@@ -174,6 +177,12 @@ var SignInAsUser = Backbone.View.extend({
 								
 								_config.user = userItems.Items[0];
 								_config.myWSContentTag = "@"+_config.user.workspace + "@";
+								
+								
+								var ele = document.getElementById("userOrgName");
+								ele.innerHTML = _config.user.firstName + " " 
+								                     + _config.user.lastName + "("+ _config.user.userId + ")";
+								
 								
 								router.navigate('showUserDashboard', {
 									trigger : true
@@ -193,6 +202,9 @@ var SignInAsUser = Backbone.View.extend({
 						
 					}
 				});	
+		}catch(e){
+			console.log(e);
+		}
 
 		return false;
 	},
@@ -218,21 +230,26 @@ var SignInAsOrg = Backbone.View.extend({
 		'click #cancelSignIn' : 'cancelSignIn'
 	},
 	signin: function(ev){
-		
-				var loginDetails = $(ev.currentTarget).serializeObject();
-				COGNITO.login(loginDetails.orgId, loginDetails.password, {
-					onSuccess:function(){
-						_config.userId = loginDetails.orgId;
-						router.navigate('showOrgDashboard', {
-							trigger : true
-						});
-						
-					}, onFailure:function(err){
-						
-						alert(err.message || JSON.stringify(err));
-						
-					}
-				});	
+		try{
+			
+			var loginDetails = $(ev.currentTarget).serializeObject();
+			COGNITO.login(loginDetails.orgId, loginDetails.password, {
+				onSuccess:function(){
+					_config.userId = loginDetails.orgId;
+					router.navigate('showOrgDashboard', {
+						trigger : true
+					});
+					
+				}, onFailure:function(err){
+					
+					alert(err.message || JSON.stringify(err));
+					
+				}
+			});			
+		}catch(e){
+			console.log(e);
+		}
+	
 
 		return false;
 	},
@@ -252,10 +269,6 @@ var UserDashboard = Backbone.View.extend({
 	render: function(){
 		var that = this;
 		var template  =_.template(tpl.get('userdashboard-template'));
-		
-		
-		
-
 		that.$el.html(template);	
 	},events: {
 		'click #logout' : 'logout',
@@ -267,8 +280,9 @@ var UserDashboard = Backbone.View.extend({
 			
 	},
 	logout: function(ev){
-		COGNITO.logout();
-		router.navigate('', {trigger:true})
+		try{COGNITO.logout();}catch(er){}
+		
+		try{router.navigate('', {trigger:true}) }catch(er){}
 		return false;
 	},
 	showMySubscriptions: function(ev){
@@ -826,7 +840,11 @@ var UploadContentDashboard = Backbone.View.extend({
 			AppController.postContentForSelf(loginDetails.newcategory, 
 					loginDetails.newauthor,loginDetails.title,
 					loginDetails.preview, loginDetails.price, loginDetails.oneTimePrice,
-					loginDetails.tags, document.getElementById('file').files);
+					loginDetails.tags, document.getElementById('file').files, {
+				
+				onSuccess:function(){},
+				onFailure: function(){}
+			});
 
 	  
 	    return false;
