@@ -5,6 +5,9 @@ var Home = Backbone.View.extend({
 		var that = this;
 		var template  =_.template(tpl.get('home-template'));
 		
+		var ele = document.getElementById("userOrgName");
+		ele.innerHTML = ""
+
 		
 		var config = new Config();
 		config.fetch({
@@ -12,16 +15,7 @@ var Home = Backbone.View.extend({
 				console.log(" config = %o", config.models)
 				_config.init(config.models[0]);
 				
-				
-				
-				
-
 				that.$el.html(template);	
-
-				var ele = document.getElementById("userOrgName");
-				ele.innerHTML = ""
-
-				
 			},
 			error: function(){
 				console.log("some problem accessing server");	
@@ -31,11 +25,10 @@ var Home = Backbone.View.extend({
 			}
 		});
 		
+	
+
 		
-		
-		
-		
-		
+	
 	},events: {
 		'click #registerAsOrg' : 'registerAsOrg',
 		'click #registerAsUser' : 'registerAsUser',
@@ -501,22 +494,16 @@ var MySubscriptionsPanel = Backbone.View.extend({
 				window.runningContentMinutePrice = contentprice;
 				window.content_title = contenttitle;
 				
-				
 				var video;
 				if(link.match(_config.videoStreamingRegExPattern)){
-					
-					if(videoStreamingPane != null){
-						try{videoStreamingPane.dispose()}catch(e){console.log(e);}
-					}
+				
 					videoStreamingPane = new VideoStreamingPane();
 						
 					
 					video = videoStreamingPane;
 				}else{
-					if(videoPane != null){
-						try{videoPane.dispose()}catch(e){console.log(e);}
-					}
-					videoPane = new VideoPane();
+					
+					videoPane = new VideoStreamingPane();
 				
 					video = videoPane;
 				}
@@ -545,17 +532,6 @@ var MySubscriptionsPanel = Backbone.View.extend({
 });
 
 
-var videoPane = null;
-var VideoPane = Backbone.View.extend({
-	el:'.videocontainer',
-	render: function(){
-		var that = this;
-		var template  =_.template(tpl.get('video-template'));
-		var data = {videolink:window.currentVideoLink}
-		that.$el.html(template(data));
-		
-	}
-});
 
 var videoStreamingPane = null;
 var VideoStreamingPane = Backbone.View.extend({
@@ -565,6 +541,17 @@ var VideoStreamingPane = Backbone.View.extend({
 		var template  =_.template(tpl.get('videostreaming-template'));
 		var data = {}
 		that.$el.html(template());
+		
+	}
+});
+var videoPane = null;
+var VideoPane = Backbone.View.extend({
+	el:'.videocontainer',
+	render: function(){
+		var that = this;
+		var template  =_.template(tpl.get('video-template'));
+		var data = {videolink:window.currentVideoLink}
+		that.$el.html(template(data));
 		
 	}
 });
@@ -627,17 +614,12 @@ var MyFilesPanel = Backbone.View.extend({
 				var video;
 				if(link.match(_config.videoStreamingRegExPattern)){
 					
-					if(videoStreamingPane != null){
-						try{videoStreamingPane.dispose()}catch(e){console.log(e);}
-					}
 					videoStreamingPane = new VideoStreamingPane();
 						
 					
 					video = videoStreamingPane;
 				}else{
-					if(videoPane != null){
-						try{videoPane.dispose()}catch(e){console.log(e);}
-					}
+					
 					videoPane = new VideoPane();
 				
 					video = videoPane;

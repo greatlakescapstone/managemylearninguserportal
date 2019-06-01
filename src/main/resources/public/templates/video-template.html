@@ -1,9 +1,9 @@
 <!-- Modal -->
-<input type="hidden" id="autoClickModalVideo" data-toggle="modal" data-target="#myVideoModal" />
+<input type="hidden" id="autoClickModalVideo" data-toggle="modal" data-target="#myModal" />
 			     	
-
+ <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 			    
-<div class="modal fade" id="#myVideoModal" role="dialog">
+<div class="modal fade" id="myModal" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -14,7 +14,7 @@
                 <p>This is a large modal.</p>
 
                 
-                <video id="video-plain" style="width:800px;height:450px" src="<%=videolink%>" controls >
+                <video id="video" style="width:800px;height:450px" src="<%=videolink%>" controls >
                   	
                 </video>
 
@@ -23,9 +23,7 @@
 
             </div>
             <div class="modal-footer">
-
-						
-                <button type="button" onClick="var video=document.getElementById('video-plain'); video.pause(); video.currentTime=0;" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" onClick="var video=document.getElementById('video'); video.pause(); video.currentTime=0;" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

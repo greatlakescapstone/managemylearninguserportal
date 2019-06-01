@@ -171,7 +171,7 @@ DYNAMODB = {
 					"content_title", data.content_title.trim(), _config.cognito.dynamodb.usersubscription, {
 				
 				onSuccess:function(items){
-					if(itema.Items && itema.Items.length>0){
+					if(items.Items && items.Items.length>0){
 						alert("Already subscribed");	
 					}else{
 						
