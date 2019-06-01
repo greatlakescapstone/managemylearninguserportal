@@ -22,7 +22,7 @@ import com.greatlearning.capstone.mmladminportal.model.Configurations;
 @SpringBootTest(classes = ManagemylearningApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ManagemylearningApplicationTests {
 
-/*	@Autowired
+	@Autowired
 	private TestRestTemplate restTemplate;
 
 	@LocalServerPort
@@ -54,7 +54,7 @@ public class ManagemylearningApplicationTests {
 		Assert.assertNotNull(config);
 	}
 
-	@Test
+	/*@Test
 	public void testCreateConfigurations() {
 		Configurations config = new Configurations();
 		config.setId("production-userportal");
@@ -62,7 +62,7 @@ public class ManagemylearningApplicationTests {
 
 		config.setCognitoRegion("us-east-1");
 		config.setCognitoUserPoolId("us-east-1_hCrbn9IWs");
-		config.setCognitoUuserPoolClientId("4sqfnv9fs4l3k02gnk81n1kbi2");
+		config.setCognitoUserPoolClientId("4sqfnv9fs4l3k02gnk81n1kbi2");
 		config.setCognitoIdentityPoolId("us-east-1:4adcf012-d73f-4c77-823f-b22913a4661d");
 		config.setCognitoCloudfrontHlsdomain("d24y44sy387x3m.cloudfront.net");
 		config.setCognitoCloudfrontClassfieddomain("d3n9eih2fcno3x.cloudfront.net");
@@ -98,8 +98,8 @@ public class ManagemylearningApplicationTests {
 
 		Configurations updatedUser = restTemplate.getForObject(getRootUrl() + "/config/" + id, Configurations.class);
 		Assert.assertNotNull(updatedUser);
-	}*/
-
+	}
+*/
 /*	@Test
 	public void testDeletePost() {
 		String id = "production";
